@@ -6,12 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.restaurantapp.ApiResult
 import com.example.restaurantapp.data.RestaurantRepository
+import com.example.restaurantapp.di.DaggerBasicAppGraph
 import com.example.restaurantapp.domain.entities.ui.LocationUI
-import com.example.restaurantapp.framework.ZomatoHelperImpl
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    val repository = RestaurantRepository(ZomatoHelperImpl())
+
+    val repository : RestaurantRepository
+    init {
+        val appGraph = DaggerBasicAppGraph.create()
+        repository = appGraph.restaurantRepository()
+    }
 
     private val _searchResult = MutableLiveData<ApiResult<List<LocationUI>>>()
     val searchResult : LiveData<ApiResult<List<LocationUI>>> = _searchResult

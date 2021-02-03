@@ -1,7 +1,7 @@
-package com.example.restaurantapp.data
+package com.example.restaurantapp.framework
 
 import com.example.restaurantapp.domain.entities.framework.network.LocationNetwork
 
-interface ZomatoHelper {
+interface ZomatoRetrofit {
     suspend fun searchLocations(query : String) : List<LocationNetwork>
 }

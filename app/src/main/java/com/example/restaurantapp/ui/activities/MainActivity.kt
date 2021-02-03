@@ -1,44 +1,70 @@
 package com.example.restaurantapp.ui.activities
 
+import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import android.widget.SearchView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.example.restaurantapp.ApiResult
 import com.example.restaurantapp.Constants
 import com.example.restaurantapp.R
+import com.example.restaurantapp.databinding.ActivityMainBinding
+import com.example.restaurantapp.domain.entities.ui.LocationUI
+import com.example.restaurantapp.ui.adapters.EmptyAdapter
+import com.example.restaurantapp.ui.adapters.LocationSearchRecyclerAdapter
+import com.example.restaurantapp.ui.adapters.ProgressAdapter
 import com.example.restaurantapp.ui.viewmodels.MainViewModel
 
-class MainActivity : AppCompatActivity() , View.OnClickListener{
+class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchItemClickListener{
 
     lateinit var viewModel : MainViewModel
+    lateinit var binding : ActivityMainBinding
+    lateinit var preferences : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
 
-        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        val location = preferences.getInt(Constants.PREFERENCES_LOCATION, -1)
+        preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val location = preferences.getInt(Constants.PREFERENCES_LOCATION_ID, -1)
         if(location != -1) {
             startActivity(Intent(this, SearchActivity::class.java))
         }
 
-        viewModel.searchResult.observe(this@MainActivity, Observer {
+        val locationResults = binding.recyclerviewMainSearch
+
+        val searchAdapter = LocationSearchRecyclerAdapter(this)
+        val emptyAdapter = EmptyAdapter("No Results", "Please enter a different search term")
+        val progressAdapter = ProgressAdapter()
+
+        viewModel.searchResult.observe(this@MainActivity, {
             when(it) {
                 is ApiResult.Success -> {
-
+                    val data = it.data!!
+                    if(data.isEmpty()) {
+                        locationResults.adapter = emptyAdapter
+                    } else {
+                        if(locationResults.adapter !is LocationSearchRecyclerAdapter) {
+                            locationResults.adapter = searchAdapter
+                        }
+                        searchAdapter.submitList(data)
+                    }
                 }
                 is ApiResult.Pending -> {
-
+                    locationResults.adapter = progressAdapter
                 }
                 is ApiResult.Failure -> {
-
+                    locationResults.adapter = EmptyAdapter("Error", "Please try again later")
                 }
             }
         })
@@ -48,7 +74,7 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         menuInflater.inflate(R.menu.menu_main, menu)
         val searchItem = menu?.findItem(R.id.app_bar_search_main)
         val searchView = searchItem?.actionView as SearchView
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
                     viewModel.searchLocations(query)
@@ -63,7 +89,41 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onClick(v: View?) {
-
+    override fun onLocationClick(position: Int, item: LocationUI) {
+        val CONFIRM_LOCATION_DIALOG_TAG = "confirm_location"
+        val listener = DialogInterface.OnClickListener { dialog, which ->
+            when(which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    finishLocation(item)
+                    dialog.dismiss()
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    dialog.dismiss()
+                }
+            }
+        }
+        val locationDialog : DialogFragment = object : DialogFragment() {
+            override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+                return AlertDialog.Builder(requireContext())
+                        .setMessage("Set ${item.name} as location?")
+                        .setPositiveButton("Yes", listener)
+                        .setNegativeButton("No", listener)
+                        .create()
+            }
+        }
+        locationDialog.show(supportFragmentManager, CONFIRM_LOCATION_DIALOG_TAG)
+        setLocation(item)
+    }
+    fun setLocation(item : LocationUI) {
+        val editor = preferences.edit()
+        editor.putInt(Constants.PREFERENCES_LOCATION_ID, item.id)
+        editor.putString(Constants.PREFERENCES_LOCATION_NAME, item.name)
+        editor.apply()
+    }
+    fun finishLocation(item: LocationUI) {
+        setLocation(item)
+        Toast.makeText(this, "Location set to ${item.name}. Change in settings", Toast.LENGTH_SHORT).show()
+        startActivity(Intent(this, SearchActivity::class.java))
+        finish()
     }
 }
