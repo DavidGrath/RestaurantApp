@@ -2,6 +2,7 @@ package com.example.restaurantapp.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,8 @@ class LocationSearchRecyclerAdapter(var clickListener : SearchItemClickListener?
             }
 
             override fun areContentsTheSame(oldItem: LocationUI, newItem: LocationUI): Boolean {
-                return oldItem.name == newItem.name
+                return oldItem.name == newItem.name &&
+                        oldItem.type == newItem.type
             }
         }
     }
@@ -33,6 +35,7 @@ class LocationSearchRecyclerAdapter(var clickListener : SearchItemClickListener?
         val location = getItem(position)
         with(holder) {
             locationName.text = location.name
+            locationType.text = location.type.toString()
             itemView.setOnClickListener {
                 clickListener?.onLocationClick(position, location)
             }
@@ -40,6 +43,7 @@ class LocationSearchRecyclerAdapter(var clickListener : SearchItemClickListener?
     }
 
     class LocationSearchViewHolder(private val binding : RecyclerviewLocationSearchBinding) : RecyclerView.ViewHolder(binding.root) {
-        val locationName = binding.textviewLocationsearchTitle
+        val locationName : TextView = binding.textviewLocationsearchTitle
+        val locationType : TextView = binding.textviewLocationsearchType
     }
 }

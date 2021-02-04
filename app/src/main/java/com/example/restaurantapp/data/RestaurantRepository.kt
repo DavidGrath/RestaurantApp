@@ -4,6 +4,7 @@ import com.example.restaurantapp.ApiResult
 import com.example.restaurantapp.MapperUtil
 import com.example.restaurantapp.di.CustomAppScope
 import com.example.restaurantapp.domain.entities.ui.LocationUI
+import com.example.restaurantapp.domain.entities.ui.RestaurantUI
 import javax.inject.Inject
 
 @CustomAppScope
@@ -12,6 +13,15 @@ class RestaurantRepository @Inject constructor(private val helper : ZomatoHelper
         val result : ApiResult<List<LocationUI>> = try {
             val search = helper.searchLocations(query)
             ApiResult.Success(search.map { MapperUtil.locationNetworkToLocationUI(it) })
+        } catch (e : Exception) {
+            ApiResult.Failure(null, e.message)
+        }
+        return result
+    }
+    suspend fun searchRestaurants(locationId : Int, locationType : Int) : ApiResult<List<RestaurantUI>>{
+        val result : ApiResult<List<RestaurantUI>> = try {
+            val restaurants = helper.searchRestaurants(locationId, locationType)
+            ApiResult.Success(restaurants.map { MapperUtil.restaurantNetworkToNetworkUI(it) })
         } catch (e : Exception) {
             ApiResult.Failure(null, e.message)
         }

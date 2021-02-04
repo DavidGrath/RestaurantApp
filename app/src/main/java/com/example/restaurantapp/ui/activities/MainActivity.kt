@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchIt
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbarMain)
+
         viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -76,10 +78,12 @@ class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchIt
         val searchView = searchItem?.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let {
+                if(!query.isNullOrEmpty()) {
                     viewModel.searchLocations(query)
+                    return true
+                } else {
+                    return false
                 }
-                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -118,6 +122,7 @@ class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchIt
         val editor = preferences.edit()
         editor.putInt(Constants.PREFERENCES_LOCATION_ID, item.id)
         editor.putString(Constants.PREFERENCES_LOCATION_NAME, item.name)
+        editor.putInt(Constants.PREFERENCES_LOCATION_TYPE, item.type)
         editor.apply()
     }
     fun finishLocation(item: LocationUI) {
