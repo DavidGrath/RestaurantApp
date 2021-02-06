@@ -11,7 +11,8 @@ data class RestaurantUI(
         val addressLocality : String,
         val addressCity : String,
         val thumbUrl : String,
-        val photoUrl : String
+        val photoUrl : String,
+        var bookmarked : Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -30,6 +31,7 @@ data class RestaurantUI(
         if (addressCity != other.addressCity) return false
         if (thumbUrl != other.thumbUrl) return false
         if (photoUrl != other.photoUrl) return false
+        if (!(bookmarked and other.bookmarked)) return false
 
         return true
     }

@@ -5,6 +5,7 @@ import com.example.restaurantapp.data.ZomatoHelper
 import com.example.restaurantapp.domain.entities.framework.network.LocationNetwork
 import com.example.restaurantapp.domain.entities.framework.network.RestaurantDetailsNetwork
 import com.example.restaurantapp.domain.entities.framework.network.RestaurantNetwork
+import com.example.restaurantapp.domain.entities.framework.network.RestaurantReviewNetwork
 import javax.inject.Inject
 
 class ZomatoHelperImpl @Inject constructor(private val retrofit: ZomatoRetrofit) : ZomatoHelper {
@@ -16,11 +17,15 @@ class ZomatoHelperImpl @Inject constructor(private val retrofit: ZomatoRetrofit)
         return retrofit.searchLocations(apiKey, query)
     }
 
-    override suspend fun searchRestaurants(locationID: Int, locationType: Int): List<RestaurantNetwork> {
-        return retrofit.searchRestaurants(apiKey, locationID, locationType)
+    override suspend fun getRestaurants(options : Map<String, String?>): List<RestaurantNetwork> {
+        return retrofit.getRestaurants(apiKey, options)
     }
 
     override suspend fun getRestaurantDetails(restaurantID: Int): RestaurantDetailsNetwork {
         return retrofit.getRestaurantDetails(apiKey, restaurantID)
+    }
+
+    override suspend fun getRestaurantReviews(restaurantID: Int): List<RestaurantReviewNetwork> {
+        return retrofit.getRestaurantReviews(apiKey, restaurantID)
     }
 }

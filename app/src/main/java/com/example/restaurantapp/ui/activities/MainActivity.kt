@@ -1,9 +1,7 @@
 package com.example.restaurantapp.ui.activities
 
 import android.app.Dialog
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
 import android.view.Menu
 import android.widget.SearchView
@@ -28,6 +26,7 @@ class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchIt
     lateinit var viewModel : MainViewModel
     lateinit var binding : ActivityMainBinding
     lateinit var preferences : SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,7 +121,7 @@ class MainActivity : AppCompatActivity() ,LocationSearchRecyclerAdapter.SearchIt
         val editor = preferences.edit()
         editor.putInt(Constants.PREFERENCES_LOCATION_ID, item.id)
         editor.putString(Constants.PREFERENCES_LOCATION_NAME, item.name)
-        editor.putInt(Constants.PREFERENCES_LOCATION_TYPE, item.type)
+        editor.putString(Constants.PREFERENCES_LOCATION_TYPE, item.type)
         editor.apply()
     }
     fun finishLocation(item: LocationUI) {

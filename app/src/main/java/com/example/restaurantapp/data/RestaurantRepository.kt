@@ -18,9 +18,9 @@ class RestaurantRepository @Inject constructor(private val helper : ZomatoHelper
         }
         return result
     }
-    suspend fun searchRestaurants(locationId : Int, locationType : Int) : ApiResult<List<RestaurantUI>>{
+    suspend fun getRestaurants(options : Map<String, String?>) : ApiResult<List<RestaurantUI>>{
         val result : ApiResult<List<RestaurantUI>> = try {
-            val restaurants = helper.searchRestaurants(locationId, locationType)
+            val restaurants = helper.getRestaurants(options)
             ApiResult.Success(restaurants.map { MapperUtil.restaurantNetworkToNetworkUI(it) })
         } catch (e : Exception) {
             ApiResult.Failure(null, e.message)

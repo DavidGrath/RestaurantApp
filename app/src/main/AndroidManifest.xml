@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RestaurantApp">
-        <activity android:name=".ui.activities.RestaurantDetailsActivity"></activity>
+        <activity android:name=".ui.activities.RestaurantDetailsActivity" />
+
         <activity android:name=".ui.activities.SearchActivity" />
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
@@ -18,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".ui.SearchService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

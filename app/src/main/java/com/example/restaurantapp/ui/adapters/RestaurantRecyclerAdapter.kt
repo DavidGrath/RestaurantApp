@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.restaurantapp.R
 import com.example.restaurantapp.databinding.RecyclerviewRestaurantBinding
 import com.example.restaurantapp.domain.entities.ui.RestaurantUI
 
@@ -44,6 +45,11 @@ class RestaurantRecyclerAdapter(var restaurantClickListener : RestaurantItemClic
             restaurantName.text = restaurant.name
             restaurantAddress.text = restaurant.address
             rating.rating = restaurant.ratingAggregate
+            if(restaurant.bookmarked) {
+                bookmarkIndicator.setImageResource(R.drawable.ic_baseline_bookmark_24)
+            } else {
+                bookmarkIndicator.setImageResource(R.drawable.ic_baseline_bookmark_24)
+            }
             if(restaurant.url != null) {
                 restaurantLink.visibility = View.VISIBLE
                 restaurantLink.text = restaurant.url
@@ -58,5 +64,6 @@ class RestaurantRecyclerAdapter(var restaurantClickListener : RestaurantItemClic
         val restaurantAddress : TextView = binding.textviewRestaurantAddress
         val rating : RatingBar = binding.ratingBarRestaurant
         val restaurantLink : TextView = binding.textviewRestaurantLink
+        val bookmarkIndicator : ImageView = binding.imageviewRestaurantBookmark
     }
 }

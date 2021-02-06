@@ -6,11 +6,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.restaurantapp.Constants
+import com.example.restaurantapp.Constants.Companion.LOCATION_MAP
 import com.example.restaurantapp.databinding.RecyclerviewLocationSearchBinding
 import com.example.restaurantapp.domain.entities.ui.LocationUI
 
 class LocationSearchRecyclerAdapter(var clickListener : SearchItemClickListener? = null) :
         ListAdapter<LocationUI, LocationSearchRecyclerAdapter.LocationSearchViewHolder>(diffUtil){
+    //TODO convert all functional interfaces to Single-Abstract-Method types by putting "fun" at the back of "interface"
     interface SearchItemClickListener {
         fun onLocationClick(position: Int, item : LocationUI)
     }
@@ -35,9 +38,9 @@ class LocationSearchRecyclerAdapter(var clickListener : SearchItemClickListener?
         val location = getItem(position)
         with(holder) {
             locationName.text = location.name
-            locationType.text = location.type.toString()
+            locationType.text = LOCATION_MAP.get(location.type)?: Constants.Companion.LocationType.CITY.locationType
             itemView.setOnClickListener {
-                clickListener?.onLocationClick(position, location)
+                    clickListener?.onLocationClick(position, location)
             }
         }
     }
